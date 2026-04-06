@@ -71,5 +71,9 @@ class IntervalTree {
     public:
     IntervalTree() : root(nullptr) {}
 
+    void insert(Interval interval) {
+        root = insert(root, interval);
+    }
+
     ~IntervalTree() {}
 };
