@@ -31,3 +31,22 @@ struct Interval {
     
     }
 };
+
+struct Node {
+    Interval interval;
+    int maxEnd;
+    Node* left;
+    Node* right;
+
+    Node(Interval i)
+        : interval(i), maxEnd(i.end), left(nullptr), right(nullptr) {}
+};
+
+class IntervalTree {
+    private:
+        Node* root;
+    public:
+    IntervalTree() : root(nullptr) {}
+
+    ~IntervalTree() {}
+};
