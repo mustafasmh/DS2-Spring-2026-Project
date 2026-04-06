@@ -28,10 +28,11 @@ struct Interval {
     // Method to convert the interval to a string representation
     string toString() const {
         return "[" + to_string(start) + ", " + to_string(end) + "] " + label;
-    
     }
 };
 
+// Node represents one tree node in the interval tree.
+// It stores the interval, the maximum end value in its subtree, and child pointers.
 struct Node {
     Interval interval;
     int maxEnd;
@@ -42,14 +43,17 @@ struct Node {
         : interval(i), maxEnd(i.end), left(nullptr), right(nullptr) {}
 };
 
+// IntervalTree maintains the root node and supports interval insertion and overlap queries.
+// It uses the 'maxEnd' field in each node to skip entire subtrees that cannot overlap.
 class IntervalTree {
     private:
-        Node* root;
+        Node* root; // Root of the interval tree
 
         int getMaxEnd(Node* n) {
             return n ? n->maxEnd : 0;
         }
 
+        // Recompute the subtree max end value after inserting into children.
         void updateMaxEnd(Node* n) {
             if (!n) return;
             n->maxEnd = max({n->interval.end,
@@ -57,6 +61,7 @@ class IntervalTree {
                              getMaxEnd(n->right)});
         }
 
+        // Recursively insert an interval into the tree by interval.start.
         Node* insert(Node* node, Interval interval){
             if (!node) return new Node(interval);
 
@@ -68,11 +73,35 @@ class IntervalTree {
             updateMaxEnd(node);
             return node;
         }
+
+        // Find any interval in the subtree that overlaps the query.
+        Node* findOverlap(Node* node, const Interval& query) {
+            // If this subtree is empty, no overlap exists here.
+            if (!node) return nullptr;
+
+            // If the current node's interval overlaps the query, return it immediately.
+            if (node->interval.overlapsWith(query))
+                return node;
+
+            // If the left subtree has any interval that ends after the query start,
+            // then it may contain an overlapping interval. Search there first.
+            if (node->left && getMaxEnd(node->left) > query.start)
+                return findOverlap(node->left, query);
+
+            // Otherwise, skip the left subtree and search the right subtree.
+            return findOverlap(node->right, query);
+        }
     public:
     IntervalTree() : root(nullptr) {}
 
+    // Insert a new interval into the interval tree.
     void insert(Interval interval) {
         root = insert(root, interval);
+    }
+
+    // Check whether the query interval overlaps with any existing interval.
+    bool hasConflict(const Interval& query) {
+        return findOverlap(root, query) != nullptr;
     }
 
     ~IntervalTree() {}
