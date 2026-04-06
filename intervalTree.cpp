@@ -45,6 +45,29 @@ struct Node {
 class IntervalTree {
     private:
         Node* root;
+
+        int getMaxEnd(Node* n) {
+            return n ? n->maxEnd : 0;
+        }
+
+        void updateMaxEnd(Node* n) {
+            if (!n) return;
+            n->maxEnd = max({n->interval.end,
+                             getMaxEnd(n->left),
+                             getMaxEnd(n->right)});
+        }
+
+        Node* insert(Node* node, Interval interval){
+            if (!node) return new Node(interval);
+
+            if (interval.start < node->interval.start)
+                node->left = insert(node->left, interval);
+            else
+                node->right = insert(node->right, interval);
+
+            updateMaxEnd(node);
+            return node;
+        }
     public:
     IntervalTree() : root(nullptr) {}
 
