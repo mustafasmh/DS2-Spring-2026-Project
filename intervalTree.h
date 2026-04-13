@@ -1,3 +1,8 @@
+
+
+#ifndef INTERVAL_TREE_H
+#define INTERVAL_TREE_H
+
 // Interval Tree Implementation
 // This file defines the Interval struct used in an interval tree data structure.
 // The Interval struct represents a range with start and end points, and an optional label.
@@ -92,8 +97,6 @@ class IntervalTree {
             return findOverlap(node->right, query);
         }
 
-        // Traverse the tree in sorted order and print each interval.
-        // This uses an in-order traversal of the binary search tree keyed by interval.start.
         void inOrder(Node* node){
             if (!node) return;
             inOrder(node->left);
@@ -113,8 +116,6 @@ class IntervalTree {
         return findOverlap(root, query) != nullptr;
     }
 
-    // Print all intervals stored in the tree in ascending order by start.
-    // If the tree is empty, display a simple empty-tree message.
     void print() {
         if (!root) {
             cout << "(empty)\n";
@@ -127,3 +128,4 @@ class IntervalTree {
 
     ~IntervalTree() {}
 };
+#endif
