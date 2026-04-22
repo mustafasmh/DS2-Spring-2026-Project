@@ -1,51 +1,55 @@
 
 
-#ifndef INTERVAL_TREE_H
-#define INTERVAL_TREE_H
+#ifndef INTERVAL_TREE_H  // Header guard to prevent multiple inclusions of this header file
+#define INTERVAL_TREE_H  // Define the header guard macro
 
 // Interval Tree Implementation
 // This file defines the Interval struct used in an interval tree data structure.
 // The Interval struct represents a range with start and end points, and an optional label.
+// The IntervalTree class implements an interval tree for efficient overlap queries.
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
-using namespace std;
+// Include necessary headers
+#include <iostream>  // Include for input/output streams (cout, etc.)
+#include <vector>    // Include for vector container (though not used here, possibly for future extensions)
+#include <string>    // Include for string class
+#include <algorithm> // Include for algorithms like max
+using namespace std;  // Use the standard namespace to avoid prefixing std::
 
+// Define the Interval struct to represent an interval with start, end, and label
 struct Interval {
-    int start;  // The starting point of the interval
-    int end;    // The ending point of the interval
-    string label; // An optional label for the interval
+    int start;  // Integer representing the starting point of the interval
+    int end;    // Integer representing the ending point of the interval
+    string label; // String label for identifying or describing the interval
 
-    // Constructor to initialize an interval with start, end, and optional label
-    Interval(int s, int e, string lbl = ""){
-        start = s;
-        end   = e;
-        label = lbl;
+    // Constructor: Initializes the interval with start, end, and optional label (default empty)
+    Interval(int s, int e, string lbl = ""){  // Parameters: s=start, e=end, lbl=label
+        start = s;  // Assign start value
+        end   = e;  // Assign end value
+        label = lbl;  // Assign label value
     }
 
     // Method to check if this interval overlaps with another interval
-    bool overlapsWith(const Interval& other) const {
-        return start < other.end && end > other.start;
+    // Overlap condition: this.start < other.end && this.end > other.start
+    bool overlapsWith(const Interval& other) const {  // const method, doesn't modify object
+        return start < other.end && end > other.start;  // Return true if intervals overlap
     }
 
-    // Method to convert the interval to a string representation
-    string toString() const {
-        return "[" + to_string(start) + ", " + to_string(end) + "] " + label;
+    // Method to convert the interval to a string representation for display
+    string toString() const {  // const method
+        return "[" + to_string(start) + ", " + to_string(end) + "] " + label;  // Format: [start, end] label
     }
 };
 
-// Node represents one tree node in the interval tree.
-// It stores the interval, the maximum end value in its subtree, and child pointers.
+// Define the Node struct for the binary search tree nodes in the interval tree
 struct Node {
-    Interval interval;
-    int maxEnd;
-    Node* left;
-    Node* right;
+    Interval interval;  // The interval stored in this node
+    int maxEnd;         // Maximum end value in the subtree rooted at this node (for optimization)
+    Node* left;         // Pointer to left child node
+    Node* right;        // Pointer to right child node
 
-    Node(Interval i)
-        : interval(i), maxEnd(i.end), left(nullptr), right(nullptr) {}
+    // Constructor: Initialize node with an interval, set maxEnd to interval.end, children to null
+    Node(Interval i)  // Parameter: i=interval to store
+        : interval(i), maxEnd(i.end), left(nullptr), right(nullptr) {}  // Member initializer list: initialize interval, maxEnd, left, right
 };
 
 // IntervalTree maintains the root node and supports interval insertion and overlap queries.
@@ -54,78 +58,81 @@ class IntervalTree {
     private:
         Node* root; // Root of the interval tree
 
+        // Helper function to get the maxEnd of a node, returns 0 if node is null
         int getMaxEnd(Node* n) {
-            return n ? n->maxEnd : 0;
+            return n ? n->maxEnd : 0;  // If n is not null, return n->maxEnd, else 0
         }
 
         // Recompute the subtree max end value after inserting into children.
         void updateMaxEnd(Node* n) {
-            if (!n) return;
-            n->maxEnd = max({n->interval.end,
-                             getMaxEnd(n->left),
-                             getMaxEnd(n->right)});
+            if (!n) return;  // If node is null, do nothing
+            n->maxEnd = max({n->interval.end,  // Take the maximum of the node's interval end
+                             getMaxEnd(n->left),  // left subtree maxEnd
+                             getMaxEnd(n->right)});  // right subtree maxEnd
         }
 
         // Recursively insert an interval into the tree by interval.start.
         Node* insert(Node* node, Interval interval){
-            if (!node) return new Node(interval);
+            if (!node) return new Node(interval);  // If current node is null, create new node with interval
 
-            if (interval.start < node->interval.start)
-                node->left = insert(node->left, interval);
+            if (interval.start < node->interval.start)  // If new interval start is less than current node's start
+                node->left = insert(node->left, interval);  // Insert into left subtree
             else
-                node->right = insert(node->right, interval);
+                node->right = insert(node->right, interval);  // Insert into right subtree
 
-            updateMaxEnd(node);
-            return node;
+            updateMaxEnd(node);  // Update the maxEnd for this node after insertion
+            return node;  // Return the node
         }
 
         // Find any interval in the subtree that overlaps the query.
         Node* findOverlap(Node* node, const Interval& query) {
             // If this subtree is empty, no overlap exists here.
-            if (!node) return nullptr;
+            if (!node) return nullptr;  // Return null if no node
 
             // If the current node's interval overlaps the query, return it immediately.
-            if (node->interval.overlapsWith(query))
-                return node;
+            if (node->interval.overlapsWith(query))  // Check if current interval overlaps
+                return node;  // Return this node
 
             // If the left subtree has any interval that ends after the query start,
             // then it may contain an overlapping interval. Search there first.
-            if (node->left && getMaxEnd(node->left) > query.start)
-                return findOverlap(node->left, query);
+            if (node->left && getMaxEnd(node->left) > query.start)  // If left exists and its maxEnd > query.start
+                return findOverlap(node->left, query);  // Search left subtree
 
             // Otherwise, skip the left subtree and search the right subtree.
-            return findOverlap(node->right, query);
+            return findOverlap(node->right, query);  // Search right subtree
         }
 
+        // Traverse the tree in sorted order and print each interval.
+        // This uses an in-order traversal of the binary search tree keyed by interval.start.
         void inOrder(Node* node){
-            if (!node) return;
-            inOrder(node->left);
-            cout << node->interval.toString() << "\n";
-            inOrder(node->right);
+            if (!node) return;  // If node is null, return
+            inOrder(node->left);  // Traverse left subtree
+            cout << node->interval.toString() << "\n";  // Print the interval
+            inOrder(node->right);  // Traverse right subtree
         }
     public:
-    IntervalTree() : root(nullptr) {}
+    IntervalTree() : root(nullptr) {}  // Constructor: Initialize root to nullptr
 
     // Insert a new interval into the interval tree.
     void insert(Interval interval) {
-        root = insert(root, interval);
+        root = insert(root, interval);  // Call the private insert method starting from root
     }
 
     // Check whether the query interval overlaps with any existing interval.
     bool hasConflict(const Interval& query) {
-        return findOverlap(root, query) != nullptr;
+        return findOverlap(root, query) != nullptr;  // Return true if findOverlap finds a node
     }
 
     void print() {
         if (!root) {
-            cout << "(empty)\n";
+            cout << "(empty)\n";  // If tree is empty, print empty message
             return;
         }
 
-        inOrder(root);
+        inOrder(root);  // Call inOrder to print all intervals
     }
 
 
-    ~IntervalTree() {}
+    ~IntervalTree() {}  // Destructor: Currently empty, no dynamic memory management
 };
 #endif
