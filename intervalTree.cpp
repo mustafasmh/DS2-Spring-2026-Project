@@ -2,6 +2,9 @@
 // This file defines the Interval struct used in an interval tree data structure.
 // The Interval struct represents a range with start and end points, and an optional label.
 
+// THIS FILE IS REDUNDANT AND IRRELEVANT TO THE PROJECT!!!
+
+
 #include <iostream>
 #include <vector>
 #include <string>
