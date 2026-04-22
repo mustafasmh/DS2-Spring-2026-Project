@@ -110,6 +110,34 @@ class IntervalTree {
             cout << node->interval.toString() << "\n";  // Print the interval
             inOrder(node->right);  // Traverse right subtree
         }
+
+        // Find ALL intervals in the subtree that overlap the query interval.
+        // Unlike findOverlap which returns on first match, this collects all overlaps.
+        // It visits both subtrees when necessary but still prunes using maxEnd for efficiency.
+        void findAllOverlaps(Node* node, const Interval& query, vector<Interval>& result) {
+            if (!node) return;  // Base case: null node, nothing to search
+            
+            // Pruning optimization: if this subtree's maxEnd doesn't reach query.start,
+            // no interval in this subtree can possibly overlap with query, so skip entirely
+            if (node->maxEnd <= query.start) return;
+            
+            // If current node's interval starts at or after query ends,
+            // no overlap possible at this node or in right subtree, only check left
+            if (node->interval.start >= query.end) {
+                findAllOverlaps(node->left, query, result);  // Search left subtree only
+                return;  // Don't search right since all intervals there start even later
+            }
+
+            // Search left subtree for overlaps (may contain intervals ending in query range)
+            findAllOverlaps(node->left, query, result);
+            
+            // Check if current node's interval overlaps the query
+            if (node->interval.overlapsWith(query))
+                result.push_back(node->interval);  // Add this interval to results
+            
+            // Search right subtree for overlaps (may contain intervals starting in query range)
+            findAllOverlaps(node->right, query, result);
+        }
     public:
     IntervalTree() : root(nullptr) {}  // Constructor: Initialize root to nullptr
 
@@ -130,6 +158,14 @@ class IntervalTree {
         }
 
         inOrder(root);  // Call inOrder to print all intervals
+    }
+    // Public wrapper: Find and return all intervals that overlap with the query interval.
+    // This method aggregates all conflicting intervals and returns them as a vector.
+    // Time complexity: O(k + log n) where k = number of overlaps found, n = total intervals
+    vector<Interval> findAllOverlaps(const Interval& query) {
+        vector<Interval> result;  // Create empty result vector to collect all overlapping intervals
+        findAllOverlaps(root, query, result);  // Call private recursive helper starting from root
+        return result;  // Return the vector containing all overlapping intervals found
     }
 
 
