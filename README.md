@@ -11,7 +11,7 @@ The implementation follows a step-by-step development process, starting with cor
 ## Data Structures Used
 - **Interval Struct**: Represents a time interval with start time, end time, and an optional label. Includes methods for overlap checking and string representation.
 - **Node Struct**: Represents a node in the binary search tree, containing an Interval, a maxEnd value (maximum end time in the subtree), and left/right child pointers.
-- **IntervalTree Class**: The main data structure that manages the tree, providing methods for insertion, overlap detection, and traversal.
+- **IntervalTree Class**: The main data structure that manages the tree, providing methods for insertion, overlap detection (single and all overlaps), and traversal.
 
 ## What We Have Done So Far
 Following the step-by-step plan, we have completed the foundational components:
@@ -23,21 +23,22 @@ Following the step-by-step plan, we have completed the foundational components:
 5. **Overlap Search (findOverlap)**: Core algorithm that finds the first overlapping interval using maxEnd pruning.
 6. **Tree Traversal**: In-order traversal for printing intervals in sorted order.
 7. **IntervalTree Class**: Wrapper class with public methods for insertion, conflict checking, and printing.
+8. **Find All Overlaps (findAllOverlaps)**: Method to find ALL overlapping intervals with a query, visiting both subtrees while still using maxEnd for pruning. Returns a vector of all conflicting intervals.
 
 The current implementation supports:
 - Inserting intervals into the tree
-- Checking if a new interval conflicts with existing ones
+- Checking if a new interval conflicts with existing ones (first match)
+- Finding all conflicts for an interval
 - Printing all intervals in sorted order
 
 ## What is Left to Do After the Interim Demo
 To complete the full meeting scheduler system:
 
-1. **findAllOverlaps**: Implement a method to find ALL overlapping intervals (not just the first), which visits both subtrees when necessary but still uses maxEnd for pruning.
-2. **Delete Operation**: Implement BST deletion with three cases (no children, one child, two children), ensuring maxEnd is properly updated after removal.
-3. **MeetingScheduler Class**: Create a wrapper class that manages multiple IntervalTrees (one per room), providing high-level methods for booking meetings (check conflicts before insert), canceling meetings (remove from tree), and querying room availability.
-4. **Testing and Validation**: Expand the test suite to cover edge cases, multiple rooms, and all operations.
-5. **Performance Optimization**: Add balancing (AVL/Red-Black) if needed for worst-case scenarios.
-6. **User Interface**: Develop a simple command-line or GUI interface for interacting with the scheduler.
+1. **Delete Operation**: Implement BST deletion with three cases (no children, one child, two children), ensuring maxEnd is properly updated after removal. This is critical for canceling meetings.
+2. **MeetingScheduler Class**: Create a wrapper class that manages multiple IntervalTrees (one per room), providing high-level methods for booking meetings (check conflicts before insert), canceling meetings (remove from tree), and querying room availability.
+3. **Testing and Validation**: Expand the test suite to cover edge cases, multiple rooms, and all operations including the new findAllOverlaps method.
+4. **Performance Optimization**: Add balancing (AVL/Red-Black) if needed for worst-case scenarios to ensure O(log n) operations even under stress.
+5. **User Interface**: Develop a simple command-line or GUI interface for interacting with the scheduler with features for viewing availability, booking, and canceling meetings.
 
-The next steps will focus on completing the delete operation and building the scheduler application layer.</content>
+The next steps will focus on completing the delete operation (the most complex step) and building the scheduler application layer that ties everything together.</content>
 <parameter name="filePath">/home/mustafa/Habib/DS2/Project/DS2-Spring-2026-Project/README.md
