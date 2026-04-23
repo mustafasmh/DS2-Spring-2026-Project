@@ -62,10 +62,15 @@ class IntervalTree {
         int getMaxEnd(Node* n) {
             return n ? n->maxEnd : 0;  // If n is not null, return n->maxEnd, else 0
         }
+
+        // Find the node with minimum start value in a subtree (leftmost node).
+        // Used to find the in-order successor when deleting a node with two children.
         Node* findMin(Node* root) {
+            if (!root) return nullptr;  // If root is null, return nullptr
+            // Keep going left until we find the leftmost node (minimum start value)
             while (root && root->left)
-                root = root->left;
-            return root;
+                root = root->left;  // Move to left child
+            return root;  // Return the node with minimum start value
         }
 
         // Recompute the subtree max end value after inserting into children.
@@ -89,57 +94,74 @@ class IntervalTree {
             return node;  // Return the node
         }
 
+        // Recursively search for an interval with exact start and end values.
+        // Returns pointer to the node if found, nullptr otherwise.
         Node* search(Node* node, int start, int end) {
-            if (!node) return nullptr;
+            if (!node) return nullptr;  // Base case: reached leaf or empty subtree
 
+            // Check if this node matches the search criteria (exact start and end)
             if (node->interval.start == start && node->interval.end == end)
-                return node;
+                return node;  // Found exact match, return this node
 
+            // BST search: go left if search start is less than node's start
             if (start < node->interval.start)
-                return search(node->left, start, end);
+                return search(node->left, start, end);  // Search left subtree
             else
-                return search(node->right, start, end);
+                return search(node->right, start, end);  // Search right subtree
         }
 
+        // Recursively delete an interval with exact start and end values from the tree.
+        // Handles all three BST deletion cases: no children, one child, two children.
+        // Returns the modified subtree root.
         Node* deleteNode(Node* node, int start, int end) {
-            if (!node) return nullptr;
+            if (!node) return nullptr;  // Base case: node doesn't exist
 
+            // Navigate to the node to delete using BST property
             if (start < node->interval.start) {
-                node->left = deleteNode(node->left, start, end);
+                node->left = deleteNode(node->left, start, end);  // Target is in left subtree
             }
             else if (start > node->interval.start) {
-                node->right = deleteNode(node->right, start, end);
+                node->right = deleteNode(node->right, start, end);  // Target is in right subtree
             }
             else {
+                // Found node with matching start; now check if end also matches
                 if (node->interval.end != end) {
-                    return node;
+                    return node;  // End doesn't match, so this isn't the right interval
                 }
 
+                // CASE 1: Node has no children (leaf node)
                 if (!node->left && !node->right) {
-                    delete node;
-                    return nullptr;
+                    delete node;  // Free memory
+                    return nullptr;  // Return nullptr to remove this node from tree
                 }
+                // CASE 2: Node has only a right child
                 else if (!node->left) {
-                    Node* temp = node->right;
-                    delete node;
-                    return temp;
+                    Node* temp = node->right;  // Save right child
+                    delete node;  // Free the node
+                    return temp;  // Return right child to replace this node
                 }
+                // CASE 2: Node has only a left child
                 else if (!node->right) {
-                    Node* temp = node->left;
-                    delete node;
-                    return temp;
+                    Node* temp = node->left;  // Save left child
+                    delete node;  // Free the node
+                    return temp;  // Return left child to replace this node
                 }
+                // CASE 3: Node has two children (most complex case)
                 else {
-                    Node* succ = findMin(node->right);
-                    node->interval.start = succ->interval.start;
-                    node->interval.end = succ->interval.end;
-                    node->interval.label = succ->interval.label;
+                    // Find in-order successor (minimum node in right subtree)
+                    Node* succ = findMin(node->right);  // Get successor
+                    // Copy successor's data to current node
+                    node->interval.start = succ->interval.start;  // Copy start
+                    node->interval.end = succ->interval.end;  // Copy end
+                    node->interval.label = succ->interval.label;  // Copy label
+                    // Delete the successor node from right subtree
                     node->right = deleteNode(node->right, succ->interval.start, succ->interval.end);
                 }
             }
 
+            // After deletion, recompute maxEnd for this node (critical for interval tree correctness)
             updateMaxEnd(node);
-            return node;
+            return node;  // Return the (possibly modified) subtree root
         }
 
         // Find any interval in the subtree that overlaps the query.
@@ -209,27 +231,35 @@ class IntervalTree {
         return findOverlap(root, query) != nullptr;  // Return true if findOverlap finds a node
     }
 
+    // Public wrapper: Search for an interval with exact start and end values.
+    // Returns true if interval exists, false otherwise.
     bool search(int start, int end) {
-        return search(root, start, end) != nullptr;
+        return search(root, start, end) != nullptr;  // Call private helper and check if found
     }
 
+    // Public wrapper: Remove an interval from the tree by its start and end values.
+    // Updates root and recomputes maxEnd values after deletion.
     void remove(int start, int end) {
-        root = deleteNode(root, start, end);
+        root = deleteNode(root, start, end);  // Call private delete method and update root
     }
 
+    // Public wrapper: Update an existing interval by deleting the old one and inserting a new one.
+    // Parameters: oldStart (old interval start), oldEnd (old interval end),
+    // newStart (new interval start), newEnd (new interval end), newLabel (new label, default empty).
     void update(int oldStart, int oldEnd, int newStart, int newEnd, string newLabel = "") {
-        root = deleteNode(root, oldStart, oldEnd);
-        root = insert(root, Interval(newStart, newEnd, newLabel));
+        root = deleteNode(root, oldStart, oldEnd);  // Remove the old interval
+        root = insert(root, Interval(newStart, newEnd, newLabel));  // Insert the new interval
     }
 
+    // Print all intervals in the tree in sorted order (in-order traversal).
     void print() {
         if (!root) {
             cout << "(empty)\n";  // If tree is empty, print empty message
-            return;
+            return;  // Exit early
         }
-
-        inOrder(root);  // Call inOrder to print all intervals
+        inOrder(root);  // Call inOrder to print all intervals in sorted order
     }
+
     // Public wrapper: Find and return all intervals that overlap with the query interval.
     // This method aggregates all conflicting intervals and returns them as a vector.
     // Time complexity: O(k + log n) where k = number of overlaps found, n = total intervals
@@ -240,6 +270,7 @@ class IntervalTree {
     }
 
 
-    ~IntervalTree() {}  // Destructor: Currently empty, no dynamic memory management
+    // Destructor: Cleans up all allocated nodes (currently empty, would need recursive cleanup for production).
+    ~IntervalTree() {}
 };
 #endif

@@ -63,6 +63,8 @@ class IntervalTree {
             return n ? n->maxEnd : 0;  // If n is not null, return n->maxEnd, else 0
         }
 
+        
+
         // Recompute the subtree max end value after inserting into children.
         void updateMaxEnd(Node* n) {
             if (!n) return;  // If node is null, do nothing

@@ -11,7 +11,7 @@ int main() {
     tree.insert(Interval(25, 35, "C"));
     tree.insert(Interval(12, 18, "D"));
     tree.insert(Interval(30, 40, "E"));
-
+    
     cout << "=== All intervals initially ===\n";
     tree.print();
 

@@ -24,21 +24,28 @@ Following the step-by-step plan, we have completed the foundational components:
 6. **Tree Traversal**: In-order traversal for printing intervals in sorted order.
 7. **IntervalTree Class**: Wrapper class with public methods for insertion, conflict checking, and printing.
 8. **Find All Overlaps (findAllOverlaps)**: Method to find ALL overlapping intervals with a query, visiting both subtrees while still using maxEnd for pruning. Returns a vector of all conflicting intervals.
+9. **Search Operation**: Recursive search to find an interval with exact start and end values. Returns true/false for existence.
+10. **Delete Operation**: Implements all three BST deletion cases (no children, one child, two children), with in-order successor replacement and maxEnd updates. Critical for meeting cancellation.
+11. **Update Operation**: High-level method to modify an interval by deleting the old one and inserting a new one with different times/label.
+12. **findMin Helper**: Utility function to find the in-order successor (minimum node in right subtree) for deletion operations.
 
 The current implementation supports:
 - Inserting intervals into the tree
+- Searching for specific intervals
 - Checking if a new interval conflicts with existing ones (first match)
 - Finding all conflicts for an interval
+- Deleting intervals from the tree
+- Updating intervals with new times/labels
 - Printing all intervals in sorted order
 
 ## What is Left to Do After the Interim Demo
 To complete the full meeting scheduler system:
 
-1. **Delete Operation**: Implement BST deletion with three cases (no children, one child, two children), ensuring maxEnd is properly updated after removal. This is critical for canceling meetings.
-2. **MeetingScheduler Class**: Create a wrapper class that manages multiple IntervalTrees (one per room), providing high-level methods for booking meetings (check conflicts before insert), canceling meetings (remove from tree), and querying room availability.
-3. **Testing and Validation**: Expand the test suite to cover edge cases, multiple rooms, and all operations including the new findAllOverlaps method.
-4. **Performance Optimization**: Add balancing (AVL/Red-Black) if needed for worst-case scenarios to ensure O(log n) operations even under stress.
-5. **User Interface**: Develop a simple command-line or GUI interface for interacting with the scheduler with features for viewing availability, booking, and canceling meetings.
+1. **MeetingScheduler Class**: Create a wrapper class that manages multiple IntervalTrees (one per room), providing high-level methods for booking meetings (check conflicts before insert), canceling meetings (remove from tree), and querying room availability.
+2. **Testing and Validation**: Expand the test suite to cover edge cases, multiple rooms, and all operations including search, delete, update, and findAllOverlaps.
+3. **Performance Optimization**: Add balancing (AVL/Red-Black) if needed for worst-case scenarios to ensure O(log n) operations even under stress.
+4. **Memory Management**: Implement proper destructor to recursively clean up all allocated nodes when the tree is destroyed.
+5. **User Interface**: Develop a simple command-line or GUI interface for interacting with the scheduler with features for viewing availability, booking, updating, and canceling meetings.
 
-The next steps will focus on completing the delete operation (the most complex step) and building the scheduler application layer that ties everything together.</content>
+The next steps will focus on integrating multiple trees into a MeetingScheduler class and building a complete application layer with comprehensive testing.</content>
 <parameter name="filePath">/home/mustafa/Habib/DS2/Project/DS2-Spring-2026-Project/README.md
