@@ -98,6 +98,44 @@ class MeetingScheduler {
                      << " in " << room << "\n";
         }
 
+        void update(const string& room, const string& oldStart, const string& oldEnd,
+                    const string& newStart, const string& newEnd, const string& newLabel) {
+            int idx = findRoom(room);
+            if (idx == -1) {
+                cout << "Room \"" << room << "\" not found.\n";
+                return;
+            }
+        
+            // Step 1: remove the old booking
+            bool removed = rooms[idx]->remove(toMinutes(oldStart), toMinutes(oldEnd));
+            if (!removed) {
+                cout << "No booking found at " << oldStart << " - " << oldEnd
+                     << " in " << room << "\n";
+                return;
+            }
+        
+            // Step 2: check if new slot conflicts with anything
+            Interval newSlot(toMinutes(newStart), toMinutes(newEnd), newLabel);
+            vector<Interval> conflicts = rooms[idx]->getAllConflicts(newSlot);
+        
+            if (!conflicts.empty()) {
+                // Conflict found — reinsert the old booking to keep tree consistent
+                rooms[idx]->insert(Interval(toMinutes(oldStart), toMinutes(oldEnd), newLabel));
+                cout << "CONFLICT! Cannot update booking in " << room << ".\n";
+                cout << "Clashes with:\n";
+                for (int i = 0; i < conflicts.size(); i++)
+                    cout << "  " << toTime(conflicts[i].start)
+                         << " - " << toTime(conflicts[i].end)
+                         << " " << conflicts[i].label << "\n";
+                return;
+            }
+        
+            // Step 3: insert the new booking
+            rooms[idx]->insert(newSlot);
+            cout << "Updated booking in " << room << " to "
+                 << newStart << " - " << newEnd << " \"" << newLabel << "\"\n";
+        }
+
 };
 
 #endif
