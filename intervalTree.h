@@ -263,7 +263,7 @@ class IntervalTree {
     // Public wrapper: Find and return all intervals that overlap with the query interval.
     // This method aggregates all conflicting intervals and returns them as a vector.
     // Time complexity: O(k + log n) where k = number of overlaps found, n = total intervals
-    vector<Interval> findAllOverlaps(const Interval& query) {
+    vector<Interval> getAllConflicts(const Interval& query) {
         vector<Interval> result;  // Create empty result vector to collect all overlapping intervals
         findAllOverlaps(root, query, result);  // Call private recursive helper starting from root
         return result;  // Return the vector containing all overlapping intervals found
