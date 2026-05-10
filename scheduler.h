@@ -158,6 +158,27 @@ class MeetingScheduler {
             }
         }
 
+        void printRoom(const string& room) {
+            int idx = findRoom(room);
+            if (idx == -1) {
+                cout << "Room \"" << room << "\" not found.\n";
+                return;
+            }
+        
+            cout << "Bookings in " << room << ":\n";
+            rooms[idx]->print();
+        }
+
+        void printAll() {
+            if (roomNames.empty()) {
+                cout << "No rooms added yet.\n";
+                return;
+            }
+            for (int i = 0; i < roomNames.size(); i++) {
+                cout << "\n=== " << roomNames[i] << " ===\n";
+                rooms[i]->print();
+            }
+        }
 };
 
 #endif
