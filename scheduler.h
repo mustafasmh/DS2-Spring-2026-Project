@@ -136,6 +136,28 @@ class MeetingScheduler {
                  << newStart << " - " << newEnd << " \"" << newLabel << "\"\n";
         }
 
+        void checkAvailability(const string& room, const string& start, const string& end) {
+            int idx = findRoom(room);
+            if (idx == -1) {
+                cout << "Room \"" << room << "\" not found.\n";
+                return;
+            }
+        
+            Interval query(toMinutes(start), toMinutes(end));
+            vector<Interval> conflicts = rooms[idx]->getAllConflicts(query);
+        
+            if (conflicts.empty()) {
+                cout << room << " is FREE from " << start << " to " << end << "\n";
+            } else {
+                cout << room << " is BUSY from " << start << " to " << end << ".\n";
+                cout << "Conflicting bookings:\n";
+                for (int i = 0; i < conflicts.size(); i++)
+                    cout << "  " << toTime(conflicts[i].start)
+                         << " - " << toTime(conflicts[i].end)
+                         << " " << conflicts[i].label << "\n";
+            }
+        }
+
 };
 
 #endif
