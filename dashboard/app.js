@@ -1,33 +1,4 @@
-let rooms = [
-  {
-    name: "Room A",
-    bookings: [
-      {
-        start: "09:00",
-        end: "10:00",
-        label: "Team Meeting",
-        description: "Discussion on project progress and pending tasks."
-      },
-      {
-        start: "11:00",
-        end: "12:00",
-        label: "Interview",
-        description: "Candidate interview with faculty panel."
-      }
-    ]
-  },
-  {
-    name: "Room B",
-    bookings: [
-      {
-        start: "10:30",
-        end: "11:30",
-        label: "Presentation",
-        description: "Student project presentation and review."
-      }
-    ]
-  }
-];
+let rooms = [];
 
 let alertTimer = null;
 

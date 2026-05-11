@@ -268,7 +268,11 @@ class IntervalTree {
         findAllOverlaps(root, query, result);  // Call private recursive helper starting from root
         return result;  // Return the vector containing all overlapping intervals found
     }
-
+    
+    //returns the root
+    Node* getRoot() const { 
+        return root; 
+    }
 
     // Destructor: Cleans up all allocated nodes (currently empty, would need recursive cleanup for production).
     ~IntervalTree() {}
