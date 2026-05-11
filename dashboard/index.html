@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Scheduler Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">IT</div>
+        <div>
+          <h2>Rooms</h2>
+          <p>Interval Tree Scheduler</p>
+        </div>
+      </div>
+
+      <div class="room-form">
+        <input id="roomName" type="text" placeholder="New room name" />
+        <button onclick="addRoom()">Add</button>
+      </div>
+
+      <div id="roomList" class="room-list"></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1>Meeting Scheduler</h1>
+          <p>Interactive room booking dashboard with conflict detection using interval logic.</p>
+        </div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <span id="totalRooms">0</span>
+            <small>Rooms</small>
+          </div>
+          <div class="stat-card">
+            <span id="totalBookings">0</span>
+            <small>Bookings</small>
+          </div>
+        </div>
+      </header>
+
+      <section id="alertBox" class="alert hidden"></section>
+
+      <section class="grid">
+        <div class="card">
+          <div class="section-title">
+            <h3>Book Meeting</h3>
+            <p>Add a new interval</p>
+          </div>
+
+          <div class="form-grid">
+            <select id="bookingRoom"></select>
+            <input id="startTime" type="time" />
+            <input id="endTime" type="time" />
+            <input id="meetingLabel" type="text" placeholder="Meeting title" />
+          </div>
+
+          <textarea
+            id="meetingDescription"
+            class="description-input"
+            placeholder="Optional meeting description"
+          ></textarea>
+
+          <button class="primary" onclick="bookMeeting()">Book Meeting</button>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h3>Check Availability</h3>
+            <p>Search for overlap</p>
+          </div>
+
+          <div class="form-grid">
+            <select id="checkRoom"></select>
+            <input id="checkStart" type="time" />
+            <input id="checkEnd" type="time" />
+          </div>
+
+          <button class="secondary" onclick="checkAvailability()">Check Availability</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <h3>Timeline View</h3>
+          <p>8 AM to 8 PM</p>
+        </div>
+
+        <div id="timelineScale" class="timeline-scale"></div>
+        <div id="timeline" class="timeline"></div>
+      </section>
+
+      <section class="grid bottom-grid">
+        <div class="card">
+          <div class="section-title">
+            <h3>All Bookings</h3>
+            <p>Update or cancel meetings</p>
+          </div>
+
+          <div id="bookingList" class="booking-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h3>Interval Tree Visual</h3>
+            <select id="treeRoom" class="small-select" onchange="renderTreeView()"></select>
+          </div>
+
+          <div class="tree-note">
+            Each node stores an interval. The <strong>max</strong> value shows the latest ending time in that subtree.
+          </div>
+
+          <div id="treeView" class="tree-view"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="eventTooltip" class="event-tooltip hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
