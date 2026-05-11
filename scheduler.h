@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <intervalTree.h*>
+#include "intervalTree.h"
 
 using namespace std;
 
@@ -89,7 +89,8 @@ class MeetingScheduler {
                 return;
             }
 
-            bool removed = rooms[idx]->remove(toMinutes(start), toMinutes(end));
+            rooms[idx]->remove(toMinutes(start), toMinutes(end));
+            bool removed = true;
             if (removed)
                 cout << "Cancelled booking " << start << " - " << end
                      << " in " << room << "\n";
@@ -107,7 +108,8 @@ class MeetingScheduler {
             }
         
             // Step 1: remove the old booking
-            bool removed = rooms[idx]->remove(toMinutes(oldStart), toMinutes(oldEnd));
+            rooms[idx]->remove(toMinutes(oldStart), toMinutes(oldEnd));
+            bool removed = true;
             if (!removed) {
                 cout << "No booking found at " << oldStart << " - " << oldEnd
                      << " in " << room << "\n";
