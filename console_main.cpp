@@ -68,6 +68,34 @@ private:
         printNodeTree(node->left, depth + 1);
     }
 
+    // Helper to safely list and select a room by number
+    string selectRoom() {
+        if (rooms.empty()) {
+            cout << "[ERROR] No rooms available. Please add a room first.\n";
+            return "";
+        }
+        
+        cout << "\nAvailable Rooms:\n";
+        vector<string> roomNames;
+        int count = 1;
+        for (const auto& pair : rooms) {
+            cout << count << ". " << pair.first << "\n";
+            roomNames.push_back(pair.first);
+            count++;
+        }
+        
+        cout << "Select a room (1-" << roomNames.size() << "): ";
+        int choice;
+        if (!(cin >> choice) || choice < 1 || choice > (int)roomNames.size()) {
+            cin.clear(); cin.ignore(10000, '\n');
+            cout << "[ERROR] Invalid selection.\n";
+            return "";
+        }
+        cin.ignore(10000, '\n');
+        
+        return roomNames[choice - 1];
+    }
+
 public:
     void addRoom() {
         cout << "Enter new room name: ";
@@ -95,24 +123,14 @@ public:
     }
 
     void bookMeeting() {
-        if (rooms.empty()) {
-            cout << "[ERROR] No rooms available. Please add a room first.\n";
-            return;
-        }
-        cout << "Room name: ";
-        string roomName;
-        getline(cin, roomName);
-        
-        if (rooms.find(roomName) == rooms.end()) {
-            cout << "[ERROR] Room not found.\n";
-            return;
-        }
+        string roomName = selectRoom();
+        if (roomName.empty()) return;
 
-        cout << "Start time (HH:MM): ";
+        cout << "Start time (HH:MM 24h): ";
         string startStr; getline(cin, startStr);
         int start = timeToMins(startStr);
 
-        cout << "End time (HH:MM): ";
+        cout << "End time (HH:MM 24h): ";
         string endStr; getline(cin, endStr);
         int end = timeToMins(endStr);
 
@@ -144,17 +162,14 @@ public:
     }
 
     void checkAvailability() {
-        cout << "Enter Room Name: ";
-        string rName; getline(cin, rName);
-        if (rooms.find(rName) == rooms.end()) {
-            cout << "[ERROR] Room does not exist.\n";
-            return;
-        }
-        cout << "Start Time (HH:MM): ";
+        string rName = selectRoom();
+        if (rName.empty()) return;
+
+        cout << "Start Time (HH:MM 24h): ";
         string startStr; getline(cin, startStr);
         int st = timeToMins(startStr);
 
-        cout << "End Time (HH:MM): ";
+        cout << "End Time (HH:MM 24h): ";
         string endStr; getline(cin, endStr);
         int en = timeToMins(endStr);
 
@@ -255,11 +270,11 @@ public:
             rooms[roomName].remove(oldIv.start, oldIv.end);
             cout << "[SUCCESS] Booking canceled successfully.\n";
         } else if (action == 1) {
-            cout << "Enter new Start Time (HH:MM): ";
+            cout << "Enter new Start Time (HH:MM 24h): ";
             string nStartStr; getline(cin, nStartStr);
             int nStart = timeToMins(nStartStr);
 
-            cout << "Enter new End Time (HH:MM): ";
+            cout << "Enter new End Time (HH:MM 24h): ";
             string nEndStr; getline(cin, nEndStr);
             int nEnd = timeToMins(nEndStr);
 
@@ -290,12 +305,8 @@ public:
     }
 
     void printTreeForRoom() {
-        cout << "Enter Room Name: ";
-        string rName; getline(cin, rName);
-        if (rooms.find(rName) == rooms.end()) {
-            cout << "[ERROR] Room does not exist.\n";
-            return;
-        }
+        string rName = selectRoom();
+        if (rName.empty()) return;
 
         cout << "\n=== Interval Tree for " << rName << " ===\n";
         Node* root = rooms[rName].getRoot();
